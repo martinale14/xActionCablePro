@@ -14,8 +14,9 @@ dependencies:
   meta: ^1.12.0
   x_action_cable:
     git:
-      url: https://github.com/martinale14/xActionCable
+      url: https://github.com/picap-inc/xActionCable
       ref: main
+      path: xActionCable
 
 dev_dependencies:
   flutter_test:

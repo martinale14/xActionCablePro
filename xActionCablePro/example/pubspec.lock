@@ -251,10 +251,10 @@ packages:
   x_action_cable:
     dependency: transitive
     description:
-      path: "."
+      path: xActionCable
       ref: main
-      resolved-ref: "2d447de8423a1f9ed8e563bc6a51d91a6713a18f"
-      url: "https://github.com/martinale14/xActionCable"
+      resolved-ref: "5a98a7eb95a521e997e61f8a7c13fc2a5f323ca1"
+      url: "https://github.com/picap-inc/xActionCable"
     source: git
     version: "0.4.0"
   x_action_cable_pro:
