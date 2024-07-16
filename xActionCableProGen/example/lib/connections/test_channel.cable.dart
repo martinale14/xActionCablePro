@@ -11,9 +11,11 @@ part of 'test_channel.dart';
 final class TestChannel extends _TestChannel {
   TestChannel({super.bookingId});
 
-  final _onMessageStreamController = StreamController<Map<String, dynamic>>();
+  final onMessageStreamController = StreamController<Map<String, dynamic>>();
 
-  final _replaceStreamController = StreamController<TestModel>();
+  final loqQueYoQuieraStreamController = StreamController<TestModel>();
+
+  final onReceiveStreamController = StreamController<dynamic>();
 
   @override
   Map<String, dynamic> get channelParams => {
@@ -21,30 +23,51 @@ final class TestChannel extends _TestChannel {
       };
 
   Stream<Map<String, dynamic>> get onMessageStream =>
-      _onMessageStreamController.stream;
+      onMessageStreamController.stream;
 
-  Stream<TestModel> get replaceStream => _replaceStreamController.stream;
+  Stream<TestModel> get loqQueYoQuieraStream =>
+      loqQueYoQuieraStreamController.stream;
+
+  Stream<dynamic> get onReceiveStream => onReceiveStreamController.stream;
 
   @override
   List<CableAction> get actions => [
         CableAction<Map<String, dynamic>>(
           code: 'message',
-          action: (data, error) {
-            if (data != null) {
-              _onMessageStreamController.add(data);
-            }
-            _onMessage(data, error);
-          },
+          action: onMessage,
         ),
         CableAction<TestModel>(
-          code: '_replace',
-          action: (data, error) {
-            if (data != null) {
-              _replaceStreamController.add(data);
-            }
-            _replace(data, error);
-          },
+          code: 'loqQueYoQuiera',
+          action: loqQueYoQuiera,
           converter: TestModel.fromJson,
         ),
+        CableAction(code: 'on_receive', action: onReceive),
       ];
+
+  @override
+  void onMessage(
+    Map<String, dynamic>? data,
+    String? error,
+  ) {
+    if (data == null) return;
+    onMessageStreamController.add(data);
+  }
+
+  @override
+  void loqQueYoQuiera(
+    TestModel? data,
+    String? error,
+  ) {
+    if (data == null) return;
+    loqQueYoQuieraStreamController.add(data);
+  }
+
+  @override
+  void onReceive(
+    dynamic data,
+    String? error,
+  ) {
+    if (data == null) return;
+    onReceiveStreamController.add(data);
+  }
 }

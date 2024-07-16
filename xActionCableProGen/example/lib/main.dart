@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:example/app_component.dart';
 import 'package:example/connections/test_channel.dart';
 import 'package:example/connections/test_connection.dart';
@@ -6,10 +8,16 @@ import 'package:flutter/material.dart';
 void main() {
   configureLocator();
 
+  final testChannel = TestChannel(bookingId: '123');
+
   locator<TestConnection>().connect().then((_) {
     if (locator<TestConnection>().connected) {
-      locator<TestConnection>().addSubscription(TestChannel(bookingId: '123'));
+      locator<TestConnection>().addSubscription(testChannel);
     }
+  });
+
+  testChannel.onMessageStream.listen((message) {
+    log(message.toString());
   });
 
   runApp(const MyApp());
