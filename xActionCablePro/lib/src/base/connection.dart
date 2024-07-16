@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:x_action_cable_pro/src/base/connection_reference.dart';
 import 'package:x_action_cable_pro/x_action_cable_pro.dart';
 import 'package:meta/meta.dart';
 
@@ -11,7 +12,8 @@ class Connection {
   final String url;
   final int retries;
   final Duration retryDelay;
-  final List<ConnectionInterceptor> interceptors;
+  late final List<ConnectionInterceptor> _interceptors;
+  late final Map<String, String> _headers;
 
   bool connected = false;
   int _retryCount = 0;
@@ -25,8 +27,12 @@ class Connection {
     required this.url,
     this.retries = 3,
     this.retryDelay = const Duration(seconds: 3),
-    this.interceptors = const [],
-  });
+    List<ConnectionInterceptor> interceptors = const [],
+    Map<String, String> headers = const {},
+  }) {
+    _interceptors = interceptors;
+    _headers = headers;
+  }
 
   Future<void> connect() async {
     do {
@@ -42,13 +48,17 @@ class Connection {
 
   Future<void> _connect() async {
     Completer completer = Completer<void>();
-    var uri = Uri.parse(url);
-    for (final interceptor in interceptors) {
-      uri = interceptor.beforeConnection(uri);
+    var reference = ConnectionReference(
+      headers: _headers,
+      uri: Uri.parse(url),
+    );
+    for (final interceptor in _interceptors) {
+      reference = interceptor.beforeConnection(reference);
     }
     _cable = runZonedGuarded<ActionCable>(
       () => ActionCable.connect(
-        uri.toString(),
+        reference.uri.toString(),
+        headers: reference.headers,
         onConnected: () {
           _log('Connection established to $url');
           _retryCount = 0;
