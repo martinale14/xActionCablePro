@@ -4,9 +4,9 @@ import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:analyzer/dart/element/type.dart' as analyzer;
 import 'package:build/build.dart';
 import 'package:dart_style/dart_style.dart';
-import 'package:logging/logging.dart';
 import 'package:x_action_cable_pro/x_action_cable_pro.dart' as pro;
 import 'package:source_gen/source_gen.dart';
 import 'package:x_action_cable_pro_gen/src/consts.dart';
@@ -155,15 +155,44 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
               'CableAction(code: \'$code\', action: ${method.displayName}),',
             );
           } else {
-            String generic = method.parameters[0].type
-                .getDisplayString(withNullability: true);
-            bool hasConverter = !method.parameters[0].type.isDartCoreType;
+            final InterfaceType generic =
+                method.parameters[0].type as analyzer.InterfaceType;
+            final bool mustHaveConverter =
+                !method.parameters[0].type.isDartCoreType;
 
-            if (hasConverter) {
-              ConstantReader? converterReader = reader.peek(field);
+            final String genericName =
+                generic.getDisplayString(withNullability: false);
+
+            if (generic.nullabilitySuffix != NullabilitySuffix.question) {
+              throw InvalidGenerationSourceError(
+                  'Generator error $genericName must be nullable');
+            }
+
+            if (mustHaveConverter) {
+              final bool validConstructor = generic.constructors.any(
+                (constructor) =>
+                    constructor.isFactory &&
+                    constructor.name == 'fromJson' &&
+                    constructor.parameters.length == 1 &&
+                    constructor.parameters.first.type
+                            .getDisplayString(withNullability: true) ==
+                        'Map<String, dynamic>' &&
+                    constructor.parameters.first.isRequired &&
+                    !constructor.parameters.first.isNamed,
+              );
+
+              if (!validConstructor) {
+                throw InvalidGenerationSourceError(
+                    '''Generator error $genericName must have a factory constructor fromJson like:
+                     'factory $genericName.fromJson(Map<String, dynamic> json) => implementation(json);\'''');
+              }
+
+              actions.write(
+                'CableAction<$genericName>(code: \'$code\', action: ${method.displayName}, converter: $genericName.fromJson,),',
+              );
             } else {
               actions.write(
-                'CableAction<$generic>(code: \'$code\', action: ${method.displayName}),',
+                'CableAction<$genericName>(code: \'$code\', action: ${method.displayName}),',
               );
             }
           }

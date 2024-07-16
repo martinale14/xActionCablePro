@@ -13,7 +13,7 @@ abstract class _TestChannel extends Channel {
   _TestChannel({this.bookingId});
 
   @ChannelAction(code: 'message')
-  void onMessage(TestModel data, String? error) {
-    debugPrint(data.message);
+  void onMessage(TestModel? data, String? error) {
+    debugPrint(data?.message);
   }
 }

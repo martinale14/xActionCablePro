@@ -19,6 +19,10 @@ final class TestChannel extends _TestChannel {
 
   @override
   List<CableAction> get actions => [
-        CableAction(code: 'message', action: onMessage),
+        CableAction<TestModel>(
+          code: 'message',
+          action: onMessage,
+          converter: TestModel.fromJson,
+        ),
       ];
 }
