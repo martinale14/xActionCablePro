@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:x_action_cable_pro/x_action_cable_pro.dart';
 
