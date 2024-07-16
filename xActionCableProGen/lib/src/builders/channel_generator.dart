@@ -130,6 +130,7 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
       ClassElement element) {
     List<Field> streamControllerFields = [];
     List<Method> streamGetters = [];
+    List<Method> methodsOverride = [];
 
     final actionsMethod = Method((MethodBuilder builder) {
       StringBuffer actions = StringBuffer('[');
@@ -144,9 +145,15 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
         String code =
             reader.peek(Consts.code.name)?.stringValue ?? method.displayName;
 
-        if (!method.isPrivate) {
+        if (method.isPrivate) {
           throw InvalidGenerationSourceError(
-            'Generator cannot target `${method.displayName}`. Must be private',
+            'Generator cannot target `${method.displayName}`. Must be public',
+          );
+        }
+
+        if (!method.isAbstract) {
+          throw InvalidGenerationSourceError(
+            'Generator cannot target `${method.displayName}`. Must be abstract',
           );
         }
 
@@ -164,7 +171,52 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
           );
         }
 
+        final String action = '''
+              if (data == null) return;
+              ${method.displayName}StreamController.add(data);
+              ''';
+
+        methodsOverride.add(Method((MethodBuilder mBuilder) {
+          mBuilder
+            ..annotations.add(const CodeExpression(Code('override')))
+            ..name = method.displayName
+            ..requiredParameters.addAll(method.parameters
+                .map((p) => Parameter((ParameterBuilder pBuilder) {
+                      pBuilder
+                        ..name = p.displayName
+                        ..type = TypeReference(
+                            (TypeReferenceBuilder typeReferenceBuilder) {
+                          typeReferenceBuilder.symbol =
+                              p.type.getDisplayString(withNullability: true);
+                        });
+                    })))
+            ..returns =
+                TypeReference((TypeReferenceBuilder typeReferenceBuilder) {
+              typeReferenceBuilder.symbol = 'void';
+            })
+            ..body = Code(action);
+        }));
+
         if (method.parameters[0].type is DynamicType) {
+          streamControllerFields.add(Field((FieldBuilder fieldBuilder) {
+            fieldBuilder
+              ..name = '${method.displayName}StreamController'
+              ..modifier = FieldModifier.final$
+              ..assignment = const Code('StreamController<dynamic>()');
+          }));
+
+          streamGetters.add(Method((MethodBuilder mBuilder) {
+            mBuilder
+              ..name = '${method.displayName}Stream'
+              ..returns =
+                  TypeReference((TypeReferenceBuilder typeReferenceBuilder) {
+                typeReferenceBuilder.symbol = 'Stream<dynamic>';
+              })
+              ..lambda = true
+              ..type = MethodType.getter
+              ..body = Code('${method.displayName}StreamController.stream');
+          }));
+
           actions.write(
             'CableAction(code: \'$code\', action: ${method.displayName}),',
           );
@@ -196,7 +248,7 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
 
           streamGetters.add(Method((MethodBuilder mBuilder) {
             mBuilder
-              ..name = '${method.displayName.substring(1)}Stream'
+              ..name = '${method.displayName}Stream'
               ..returns =
                   TypeReference((TypeReferenceBuilder typeReferenceBuilder) {
                 typeReferenceBuilder.symbol = 'Stream<$genericName>';
@@ -205,13 +257,6 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
               ..type = MethodType.getter
               ..body = Code('${method.displayName}StreamController.stream');
           }));
-
-          final String action = ''' (data, error) { 
-              if (data != null) {
-                ${method.displayName}StreamController.add(data);
-              }
-              ${method.displayName}(data, error);
-            }''';
 
           if (mustHaveConverter) {
             final bool validConstructor = generic.constructors.any(
@@ -233,12 +278,12 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
             }
 
             actions.write(
-              'CableAction<$genericName>(code: \'$code\', action: $action, converter: $genericName.fromJson,),',
+              'CableAction<$genericName>(code: \'$code\', action: ${method.displayName}, converter: $genericName.fromJson,),',
             );
           } else {
             if (generic.isDartCoreMap) {
               actions.write(
-                'CableAction<$genericName>(code: \'$code\', action: $action,),',
+                'CableAction<$genericName>(code: \'$code\', action: ${method.displayName},),',
               );
             } else {
               throw InvalidGenerationSource(
@@ -261,7 +306,14 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
         ..body = Code(actions.toString());
     });
 
-    return (streamControllerFields, [...streamGetters, actionsMethod]);
+    return (
+      streamControllerFields,
+      [
+        ...streamGetters,
+        actionsMethod,
+        ...methodsOverride,
+      ]
+    );
   }
 
   Constructor _generateConstructor(ClassElement element) =>

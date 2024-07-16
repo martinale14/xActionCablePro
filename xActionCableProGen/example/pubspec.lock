@@ -592,31 +592,29 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.5"
-  x_action_cable:
-    dependency: transitive
-    description:
-      path: xActionCable
-      ref: main
-      resolved-ref: f1b2f330bc9f2fb613a42fdca67607eb5da71201
-      url: "https://github.com/picap-inc/xActionCable"
-    source: git
-    version: "0.4.0"
   x_action_cable_pro:
     dependency: "direct main"
     description:
-      path: xActionCablePro
-      ref: main
-      resolved-ref: f1b2f330bc9f2fb613a42fdca67607eb5da71201
-      url: "https://github.com/picap-inc/xActionCable"
-    source: git
-    version: "0.0.1"
+      name: x_action_cable_pro
+      sha256: "4314bf2231cb197db39b88f0254d585d0e6a0d43fa0c5c31f74e96b1e70906c0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   x_action_cable_pro_gen:
     dependency: "direct dev"
     description:
       path: ".."
       relative: true
     source: path
-    version: "0.0.1"
+    version: "1.0.0"
+  x_action_cable_v2:
+    dependency: transitive
+    description:
+      name: x_action_cable_v2
+      sha256: "186f49b3e5f0d6ff6a3c4950a8c67d7bb48359b5f85a5a854e55ffd58ce2e538"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   yaml:
     dependency: transitive
     description:
