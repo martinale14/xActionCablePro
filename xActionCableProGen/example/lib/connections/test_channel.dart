@@ -12,12 +12,8 @@ abstract class _TestChannel extends Channel {
   _TestChannel({this.bookingId});
 
   @ChannelAction(code: 'message')
-  void onMessage(Map<String, dynamic>? data, String? error) {
-    debugPrint(data?.toString());
-  }
+  void _onMessage(Map<String, dynamic>? data, String? error);
 
   @ChannelAction()
-  void replace(TestModel? data, String? error) {
-    debugPrint(data?.toString());
-  }
+  void _replace(TestModel? data, String? error);
 }

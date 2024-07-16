@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:x_action_cable/store/callbacks.store.dart';
-import 'package:x_action_cable/types.dart';
+import 'package:x_action_cable_v2/store/callbacks.store.dart';
+import 'package:x_action_cable_v2/types.dart';
 
 /// This class represents the channel that you are going to perfome actions
 /// Like:

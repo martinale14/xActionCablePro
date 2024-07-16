@@ -70,6 +70,9 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
       }
     }
 
+    final (List<Field> fields, List<Method> methods) =
+        _generateChannelActionsGetterMethod(element);
+
     final classBuilder = Class((builder) {
       builder
         ..annotations.addAll(annotations.map(
@@ -79,8 +82,9 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
         ..name = className
         ..extend = refer(element.displayName)
         ..constructors.add(_generateConstructor(element))
-        ..methods.add(_generateChannelParamsGetterMethod(element))
-        ..methods.add(_generateChannelActionsGetterMethod(element));
+        ..fields.addAll(fields)
+        ..methods.add(_generateChannelParamsGetterMethods(element))
+        ..methods.addAll(methods);
     });
 
     const String ignore = '// coverage:ignore-file\n'
@@ -91,7 +95,7 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
     return DartFormatter().format('$ignore\n${classBuilder.accept(emitter)}');
   }
 
-  Method _generateChannelParamsGetterMethod(ClassElement element) =>
+  Method _generateChannelParamsGetterMethods(ClassElement element) =>
       Method((MethodBuilder builder) {
         StringBuffer params = StringBuffer('{');
 
@@ -122,105 +126,143 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
           ..body = Code(params.toString());
       });
 
-  Method _generateChannelActionsGetterMethod(ClassElement element) =>
-      Method((MethodBuilder builder) {
-        StringBuffer actions = StringBuffer('[');
+  (List<Field>, List<Method>) _generateChannelActionsGetterMethod(
+      ClassElement element) {
+    List<Field> streamControllerFields = [];
+    List<Method> streamGetters = [];
 
-        for (final method in element.methods) {
-          final DartObject? annotation = _typeChecker(pro.ChannelAction)
-              .firstAnnotationOf(method, throwOnUnresolved: false);
+    final actionsMethod = Method((MethodBuilder builder) {
+      StringBuffer actions = StringBuffer('[');
 
-          if (annotation == null) continue;
+      for (final method in element.methods) {
+        final DartObject? annotation = _typeChecker(pro.ChannelAction)
+            .firstAnnotationOf(method, throwOnUnresolved: false);
 
-          ConstantReader reader = ConstantReader(annotation);
-          String code =
-              reader.peek(Consts.code.name)?.stringValue ?? method.displayName;
+        if (annotation == null) continue;
 
-          if (method.parameters.length < 2) {
-            throw InvalidGenerationSourceError(
-              'Generator cannot target `${method.displayName}`. Requires at least 2 parameters',
-            );
+        ConstantReader reader = ConstantReader(annotation);
+        String code =
+            reader.peek(Consts.code.name)?.stringValue ?? method.displayName;
+
+        if (!method.isPrivate) {
+          throw InvalidGenerationSourceError(
+            'Generator cannot target `${method.displayName}`. Must be private',
+          );
+        }
+
+        if (method.parameters.length < 2) {
+          throw InvalidGenerationSourceError(
+            'Generator cannot target `${method.displayName}`. Requires at least 2 parameters',
+          );
+        }
+
+        if (!method.parameters[1].type.isDartCoreString ||
+            method.parameters[1].type.nullabilitySuffix !=
+                NullabilitySuffix.question) {
+          throw InvalidGenerationSourceError(
+            'Generator cannot target `${method.displayName}`. Second parameter must be a nullable String',
+          );
+        }
+
+        if (method.parameters[0].type is DynamicType) {
+          actions.write(
+            'CableAction(code: \'$code\', action: ${method.displayName}),',
+          );
+        } else {
+          final InterfaceType generic =
+              method.parameters[0].type as analyzer.InterfaceType;
+
+          if (generic.isDartCoreList) {
+            throw InvalidGenerationSource('Lists are not allowed');
           }
 
-          if (!method.parameters[1].type.isDartCoreString ||
-              method.parameters[1].type.nullabilitySuffix !=
-                  NullabilitySuffix.question) {
+          final String genericName =
+              generic.getDisplayString(withNullability: false);
+
+          if (generic.nullabilitySuffix != NullabilitySuffix.question) {
             throw InvalidGenerationSourceError(
-              'Generator cannot target `${method.displayName}`. Second parameter must be a nullable String',
-            );
+                'Generator error $genericName must be nullable');
           }
 
-          if (method.parameters[0].type is DynamicType) {
+          final bool mustHaveConverter =
+              generic.element.library.name != 'dart.core';
+
+          streamControllerFields.add(Field((FieldBuilder fieldBuilder) {
+            fieldBuilder
+              ..name = '${method.displayName}StreamController'
+              ..modifier = FieldModifier.final$
+              ..assignment = Code('StreamController<$genericName>()');
+          }));
+
+          streamGetters.add(Method((MethodBuilder mBuilder) {
+            mBuilder
+              ..name = '${method.displayName.substring(1)}Stream'
+              ..returns =
+                  TypeReference((TypeReferenceBuilder typeReferenceBuilder) {
+                typeReferenceBuilder.symbol = 'Stream<$genericName>';
+              })
+              ..lambda = true
+              ..type = MethodType.getter
+              ..body = Code('${method.displayName}StreamController.stream');
+          }));
+
+          final String action = ''' (data, error) { 
+              if (data != null) {
+                ${method.displayName}StreamController.add(data);
+              }
+              ${method.displayName}(data, error);
+            }''';
+
+          if (mustHaveConverter) {
+            final bool validConstructor = generic.constructors.any(
+              (constructor) =>
+                  constructor.isFactory &&
+                  constructor.name == 'fromJson' &&
+                  constructor.parameters.length == 1 &&
+                  constructor.parameters.first.type
+                          .getDisplayString(withNullability: true) ==
+                      'Map<String, dynamic>' &&
+                  constructor.parameters.first.isRequired &&
+                  !constructor.parameters.first.isNamed,
+            );
+
+            if (!validConstructor) {
+              throw InvalidGenerationSourceError(
+                  '''Generator error $genericName must have a factory constructor fromJson like:
+                     'factory $genericName.fromJson(Map<String, dynamic> json) => implementation(json);\'''');
+            }
+
             actions.write(
-              'CableAction(code: \'$code\', action: ${method.displayName}),',
+              'CableAction<$genericName>(code: \'$code\', action: $action, converter: $genericName.fromJson,),',
             );
           } else {
-            final InterfaceType generic =
-                method.parameters[0].type as analyzer.InterfaceType;
-
-            if (generic.isDartCoreList) {
-              throw InvalidGenerationSource('Lists are not allowed');
-            }
-
-            final String genericName =
-                generic.getDisplayString(withNullability: false);
-
-            if (generic.nullabilitySuffix != NullabilitySuffix.question) {
-              throw InvalidGenerationSourceError(
-                  'Generator error $genericName must be nullable');
-            }
-
-            final bool mustHaveConverter =
-                generic.element.library.name != 'dart.core';
-
-            if (mustHaveConverter) {
-              final bool validConstructor = generic.constructors.any(
-                (constructor) =>
-                    constructor.isFactory &&
-                    constructor.name == 'fromJson' &&
-                    constructor.parameters.length == 1 &&
-                    constructor.parameters.first.type
-                            .getDisplayString(withNullability: true) ==
-                        'Map<String, dynamic>' &&
-                    constructor.parameters.first.isRequired &&
-                    !constructor.parameters.first.isNamed,
-              );
-
-              if (!validConstructor) {
-                throw InvalidGenerationSourceError(
-                    '''Generator error $genericName must have a factory constructor fromJson like:
-                     'factory $genericName.fromJson(Map<String, dynamic> json) => implementation(json);\'''');
-              }
-
+            if (generic.isDartCoreMap) {
               actions.write(
-                'CableAction<$genericName>(code: \'$code\', action: ${method.displayName}, converter: $genericName.fromJson,),',
+                'CableAction<$genericName>(code: \'$code\', action: $action,),',
               );
             } else {
-              if (generic.isDartCoreMap) {
-                actions.write(
-                  'CableAction<$genericName>(code: \'$code\', action: ${method.displayName}),',
-                );
-              } else {
-                throw InvalidGenerationSource(
-                    '$genericName not allowed only serializable types and Map<String, dynamic> are allowed');
-              }
+              throw InvalidGenerationSource(
+                  '$genericName not allowed only serializable types and Map<String, dynamic> are allowed');
             }
           }
         }
+      }
 
-        actions.write(']');
+      actions.write(']');
 
-        builder
-          ..annotations.add(const CodeExpression(Code('override')))
-          ..returns =
-              TypeReference((TypeReferenceBuilder typeReferenceBuilder) {
-            typeReferenceBuilder.symbol = 'List<CableAction>';
-          })
-          ..name = 'actions'
-          ..type = MethodType.getter
-          ..lambda = true
-          ..body = Code(actions.toString());
-      });
+      builder
+        ..annotations.add(const CodeExpression(Code('override')))
+        ..returns = TypeReference((TypeReferenceBuilder typeReferenceBuilder) {
+          typeReferenceBuilder.symbol = 'List<CableAction>';
+        })
+        ..name = 'actions'
+        ..type = MethodType.getter
+        ..lambda = true
+        ..body = Code(actions.toString());
+    });
+
+    return (streamControllerFields, [...streamGetters, actionsMethod]);
+  }
 
   Constructor _generateConstructor(ClassElement element) =>
       Constructor((ConstructorBuilder builder) {

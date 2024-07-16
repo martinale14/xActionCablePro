@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:x_action_cable/helpers/logger.helper.dart';
+import 'package:x_action_cable_v2/helpers/logger.helper.dart';
 
 void main() {
   test('Should log message', () {

@@ -1,4 +1,4 @@
-import 'package:x_action_cable/types.dart';
+import 'package:x_action_cable_v2/types.dart';
 
 /// Use this class to register yours callbacks from server
 /// ```Dart

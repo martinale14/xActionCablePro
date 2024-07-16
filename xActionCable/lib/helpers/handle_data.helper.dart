@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:x_action_cable/models/action_response.dart';
-import 'package:x_action_cable/store/callbacks.store.dart';
+import 'package:x_action_cable_v2/models/action_response.dart';
+import 'package:x_action_cable_v2/store/callbacks.store.dart';
 import 'package:collection/collection.dart';
 import 'package:logger/logger.dart';
 
