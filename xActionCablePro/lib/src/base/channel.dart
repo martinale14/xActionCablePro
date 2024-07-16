@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:meta/meta.dart';
 import 'package:x_action_cable_pro/src/base/cable_action.dart';
-import 'package:x_action_cable/models/action_channel.dart';
+import 'package:x_action_cable_v2/models/action_channel.dart';
 
 abstract class Channel {
   ActionChannel? channel;

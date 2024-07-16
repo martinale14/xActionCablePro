@@ -1,4 +1,4 @@
-import 'package:x_action_cable/models/models.dart';
+import 'package:x_action_cable_v2/models/models.dart';
 
 class CableAction<T> {
   String code;

@@ -248,22 +248,21 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.5"
-  x_action_cable:
-    dependency: transitive
-    description:
-      path: xActionCable
-      ref: main
-      resolved-ref: b4ce4c2c39342b7b630318ad435475db834b9276
-      url: "https://github.com/picap-inc/xActionCable"
-    source: git
-    version: "0.4.0"
   x_action_cable_pro:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "0.0.1"
+    version: "1.0.0"
+  x_action_cable_v2:
+    dependency: transitive
+    description:
+      name: x_action_cable_v2
+      sha256: "873d216f8e9507a6756c409e5388b335da5fea7cb5aa843b23f214d9b77f8406"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
 sdks:
   dart: ">=3.4.3 <4.0.0"
   flutter: ">=3.18.0-18.0.pre.54"
