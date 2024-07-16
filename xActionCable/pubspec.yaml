@@ -1,4 +1,4 @@
-name: x_action_cable
+name: x_action_cable_v2
 version: 1.0.0
 description: >-
   Port for x_action_cable, solving problems to enhance app updates.
