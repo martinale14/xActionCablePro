@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:flutter/foundation.dart';
 import 'package:x_action_cable/models/models.dart';
 
 class CableAction<T> {
@@ -28,8 +25,8 @@ class CableAction<T> {
 
         return;
       } catch (e, s) {
-        debugPrint(e.toString());
-        debugPrint(s.toString());
+        print(e.toString());
+        print(s.toString());
       }
     }
 

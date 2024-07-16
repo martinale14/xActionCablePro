@@ -5,8 +5,12 @@ import 'package:meta/meta_meta.dart';
 @Target({TargetKind.classType})
 final class CableChannel {
   final String? name;
+  final bool injectableSingleton;
 
-  const CableChannel({this.name});
+  const CableChannel({
+    this.name,
+    this.injectableSingleton = false,
+  });
 }
 
 @immutable
