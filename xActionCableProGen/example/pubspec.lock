@@ -597,7 +597,7 @@ packages:
     description:
       path: xActionCable
       ref: main
-      resolved-ref: "20b249718b26188fabd529766df823bd09e84101"
+      resolved-ref: c72732f8f5ee0bdc58d9412a428260703578158f
       url: "https://github.com/picap-inc/xActionCable"
     source: git
     version: "0.4.0"
@@ -606,7 +606,7 @@ packages:
     description:
       path: xActionCablePro
       ref: main
-      resolved-ref: "20b249718b26188fabd529766df823bd09e84101"
+      resolved-ref: c72732f8f5ee0bdc58d9412a428260703578158f
       url: "https://github.com/picap-inc/xActionCable"
     source: git
     version: "0.0.1"

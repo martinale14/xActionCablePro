@@ -1,6 +1,15 @@
+import 'package:example/app_component.dart';
+import 'package:example/connections/test_channel.dart';
+import 'package:example/connections/test_connection.dart';
 import 'package:flutter/material.dart';
 
 void main() {
+  configureLocator();
+
+  locator<TestConnection>().connect().then((_) {
+    locator<TestConnection>().addSubscription(TestChannel(bookingId: '123'));
+  });
+
   runApp(const MyApp());
 }
 

@@ -5,7 +5,7 @@ import 'package:injectable/injectable.dart';
 
 part 'test_channel.cable.dart';
 
-@CableChannel(extraAnnotations: ['lazySingleton'])
+@CableChannel()
 abstract class _TestChannel extends Channel {
   @ChannelParam(key: 'id')
   final String? bookingId;
@@ -14,6 +14,11 @@ abstract class _TestChannel extends Channel {
 
   @ChannelAction(code: 'message')
   void onMessage(Map<String, dynamic>? data, String? error) {
+    debugPrint(data?.toString());
+  }
+
+  @ChannelAction()
+  void replace(TestModel? data, String? error) {
     debugPrint(data?.toString());
   }
 }

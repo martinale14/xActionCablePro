@@ -157,15 +157,10 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
           } else {
             final InterfaceType generic =
                 method.parameters[0].type as analyzer.InterfaceType;
-            final bool mustHaveConverter = !generic.isDartCoreType;
 
-            String types = '';
-
-            for (final t in generic.allSupertypes) {
-              types += t.getDisplayString(withNullability: false) + '-';
+            if (generic.isDartCoreList) {
+              throw InvalidGenerationSource('Lists are not allowed');
             }
-
-            throw InvalidGenerationSource(types);
 
             final String genericName =
                 generic.getDisplayString(withNullability: false);
@@ -174,6 +169,9 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
               throw InvalidGenerationSourceError(
                   'Generator error $genericName must be nullable');
             }
+
+            final bool mustHaveConverter =
+                generic.element.library.name != 'dart.core';
 
             if (mustHaveConverter) {
               final bool validConstructor = generic.constructors.any(
@@ -198,9 +196,14 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
                 'CableAction<$genericName>(code: \'$code\', action: ${method.displayName}, converter: $genericName.fromJson,),',
               );
             } else {
-              actions.write(
-                'CableAction<$genericName>(code: \'$code\', action: ${method.displayName}),',
-              );
+              if (generic.isDartCoreMap) {
+                actions.write(
+                  'CableAction<$genericName>(code: \'$code\', action: ${method.displayName}),',
+                );
+              } else {
+                throw InvalidGenerationSource(
+                    '$genericName not allowed only serializable types and Map<String, dynamic> are allowed');
+              }
             }
           }
         }
