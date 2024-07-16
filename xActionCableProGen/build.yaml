@@ -1,0 +1,9 @@
+# Read about `build.yaml` at https://pub.dartlang.org/packages/build_config
+builders:
+  x_action_cable_pro_gen:
+    target: ":x_action_cable_pro_gen"
+    import: "package:x_action_cable_pro_gen/x_action_cable_pro_gen.dart"
+    builder_factories: ["actionCableGeneratorFactory"]
+    build_extensions: {".dart": [".cable.dart"]}
+    auto_apply: root_package
+    build_to: source

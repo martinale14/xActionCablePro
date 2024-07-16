@@ -1,4 +1,4 @@
-import 'package:x_action_cable_pro/action_cable_pro.dart';
+import 'package:x_action_cable_pro/x_action_cable_pro.dart';
 
 class TestConnection extends Connection {
   @override
@@ -26,30 +26,3 @@ class TestChannel extends Channel {
     print(data);
   }
 }
-
-/*
-@Channel(name: 'TestChannel')
-abstract class _TestChannel {
-  @ChannelParam(key: 'id')
-  final String bookingId;
-
-  @Action(code: 'message')
-  void onMessage(dynamic data, String? error) {
-    print(data);
-  }
-
-  @override
-  Map<String, dynamic> get channelParams => {
-        'id': bookingId,
-      };
-
-  @override
-  List<CableAction> get actions => [
-        CableAction(code: 'message', action: onMessage),
-      ];
-
-  _TestChannel({
-    required this.bookingId,
-  });
-}
-*/

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:x_action_cable_pro/action_cable_pro.dart';
+import 'package:x_action_cable_pro/x_action_cable_pro.dart';
 import 'package:meta/meta.dart';
 
 abstract class Connection {

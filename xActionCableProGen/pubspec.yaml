@@ -1,20 +1,35 @@
-name: cable_generator
+name: x_action_cable_pro_gen
 description: "A new Flutter package project."
 version: 0.0.1
-homepage:
+
+publish_to: 'none'
 
 environment:
   sdk: '>=3.4.3 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
+  analyzer: ^6.4.1
+  build: ^2.4.1
+  built_collection: ^5.1.1
+  code_builder: ^4.10.0
+  dart_style: ^2.3.6
   flutter:
     sdk: flutter
+  logging: ^1.2.0
+  source_gen: ^1.5.0
+  x_action_cable_pro:
+    git:
+      url: https://github.com/picap-inc/xActionCable
+      ref: main
+      path: xActionCablePro
+  yaml: ^3.1.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  build_runner: ^2.4.11
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
