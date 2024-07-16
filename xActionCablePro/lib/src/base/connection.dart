@@ -42,10 +42,13 @@ class Connection {
 
   Future<void> _connect() async {
     Completer completer = Completer<void>();
-
+    var uri = Uri.parse(url);
+    for (final interceptor in interceptors) {
+      uri = interceptor.beforeConnection(uri);
+    }
     _cable = runZonedGuarded<ActionCable>(
       () => ActionCable.connect(
-        url,
+        uri.toString(),
         onConnected: () {
           _log('Connection established to $url');
           _retryCount = 0;
