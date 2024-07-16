@@ -6,18 +6,23 @@ import 'package:x_action_cable_pro/x_action_cable_pro.dart';
 import 'package:meta/meta.dart';
 
 abstract class Connection {
+  final String url;
+  final int retries;
+  final Duration retrayDelay;
+
   bool connected = false;
   int _retryCount = 0;
   ActionCable? _cable;
-  Map<String, Channel> subscriptions = {};
-
-  String get url;
-  int get retries => 3;
-  Duration get retrayDelay => const Duration(seconds: 3);
+  final Map<String, Channel> _subscriptions = {};
 
   ActionCable? get cable => _cable;
+  Map<String, dynamic> get subscriptions => Map.unmodifiable(_subscriptions);
 
-  Connection();
+  Connection({
+    required this.url,
+    this.retries = 3,
+    this.retrayDelay = const Duration(seconds: 3),
+  });
 
   Future<void> connect() async {
     do {
@@ -92,10 +97,10 @@ abstract class Connection {
 
   @mustCallSuper
   void onConnected() {
-    if (subscriptions.isNotEmpty) {
+    if (_subscriptions.isNotEmpty) {
       final List<Channel> retryChannels =
-          subscriptions.entries.map((entry) => entry.value).toList();
-      subscriptions.clear();
+          _subscriptions.entries.map((entry) => entry.value).toList();
+      _subscriptions.clear();
       for (final channel in retryChannels) {
         addSubscription(channel);
       }
@@ -118,13 +123,13 @@ abstract class Connection {
       channel.channelName,
       channelParams: channel.channelParams,
       onSubscribed: () {
-        assert(!subscriptions.containsKey(channel.channelName));
-        subscriptions[channel.channelName] = channel;
+        assert(!_subscriptions.containsKey(channel.channelName));
+        _subscriptions[channel.channelName] = channel;
         channel.onSubscribed();
       },
       onDisconnected: () {
-        assert(subscriptions.containsKey(channel.channelName));
-        subscriptions.remove(channel.channelName);
+        assert(_subscriptions.containsKey(channel.channelName));
+        _subscriptions.remove(channel.channelName);
         channel.onDisconnected();
       },
       callbacks:
@@ -134,10 +139,10 @@ abstract class Connection {
   }
 
   void removeSubscription(String channelName) {
-    subscriptions[channelName]?.channel?.unsubscribe();
-    subscriptions[channelName]?.onDisconnected();
-    assert(subscriptions.containsKey(channelName));
-    subscriptions.remove(channelName);
+    _subscriptions[channelName]?.channel?.unsubscribe();
+    _subscriptions[channelName]?.onDisconnected();
+    assert(_subscriptions.containsKey(channelName));
+    _subscriptions.remove(channelName);
   }
 }
 

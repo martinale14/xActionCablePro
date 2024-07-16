@@ -14,11 +14,14 @@ dependencies:
   x_action_cable_pro:
     path: ../
   cupertino_icons: ^1.0.6
+  get_it: ^7.7.0
+  injectable: ^2.4.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter 
   flutter_lints: ^3.0.0
+  injectable_generator: ^2.6.1
 
 flutter:
   uses-material-design: true
