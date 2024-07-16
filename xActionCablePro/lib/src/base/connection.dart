@@ -2,11 +2,8 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:x_action_cable_pro/src/base/connection_reference.dart';
 import 'package:x_action_cable_pro/x_action_cable_pro.dart';
 import 'package:meta/meta.dart';
-
-import 'connection_interceptor.dart';
 
 class Connection {
   final int retries;

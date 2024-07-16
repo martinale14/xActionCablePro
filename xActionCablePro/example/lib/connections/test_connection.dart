@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:x_action_cable_pro/x_action_cable_pro.dart';
 
 class TestConnection extends Connection {
@@ -30,7 +32,7 @@ class TestChannel extends Channel {
   });
 
   void onMessage(Message? data, String? error) {
-    print(data?.test);
+    log(data?.test.toString() ?? 'Null');
   }
 }
 
