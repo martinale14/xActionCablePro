@@ -157,8 +157,15 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
           } else {
             final InterfaceType generic =
                 method.parameters[0].type as analyzer.InterfaceType;
-            final bool mustHaveConverter =
-                !method.parameters[0].type.isDartCoreType;
+            final bool mustHaveConverter = !generic.isDartCoreType;
+
+            String types = '';
+
+            for (final t in generic.allSupertypes) {
+              types += t.getDisplayString(withNullability: false) + '-';
+            }
+
+            throw InvalidGenerationSource(types);
 
             final String genericName =
                 generic.getDisplayString(withNullability: false);

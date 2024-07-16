@@ -1,0 +1,4 @@
+global_options:
+  x_action_cable_pro_gen:x_action_cable_pro_gen:
+    runs_before:
+      - injectable_generator:injectable_config_builder
