@@ -9,9 +9,9 @@ import 'package:meta/meta.dart';
 import 'connection_interceptor.dart';
 
 class Connection {
-  final String url;
   final int retries;
   final Duration retryDelay;
+  late Uri _uri;
   late final List<ConnectionInterceptor> _interceptors;
   late final Map<String, String> _headers;
 
@@ -24,12 +24,13 @@ class Connection {
   Map<String, dynamic> get subscriptions => Map.unmodifiable(_subscriptions);
 
   Connection({
-    required this.url,
+    required String url,
     this.retries = 3,
     this.retryDelay = const Duration(seconds: 3),
     List<ConnectionInterceptor> interceptors = const [],
     Map<String, String> headers = const {},
   }) {
+    _uri = Uri.parse(url);
     _interceptors = interceptors;
     _headers = headers;
   }
@@ -50,8 +51,10 @@ class Connection {
     Completer completer = Completer<void>();
     var reference = ConnectionReference(
       headers: _headers,
-      uri: Uri.parse(url),
+      uri: _uri,
     );
+    _headers = reference.headers;
+    _uri = reference.uri;
     for (final interceptor in _interceptors) {
       reference = interceptor.beforeConnection(reference);
     }
@@ -60,7 +63,7 @@ class Connection {
         reference.uri.toString(),
         headers: reference.headers,
         onConnected: () {
-          _log('Connection established to $url');
+          _log('Connection established to $_uri');
           _retryCount = 0;
           connected = true;
           onConnected();
@@ -126,12 +129,12 @@ class Connection {
 
   @mustCallSuper
   void onCannotConnect() {
-    _log('$url cannot connect');
+    _log('$_uri cannot connect');
   }
 
   @mustCallSuper
   void onConnectionLost() {
-    _log('$url connection lost');
+    _log('$_uri connection lost');
     _onConnectionFailure();
   }
 
