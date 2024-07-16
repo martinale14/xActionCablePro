@@ -2,8 +2,8 @@ name: x_action_cable_pro
 version: 1.0.0
 description: >-
   x_action_cable_v2 abstraction for easy to use classes for dependency injection.
-homepage: https://github.com/martinale14/xActionCablePro
-documentation: https://github.com/martinale14/xActionCablePro
+homepage: https://github.com/martinale14/xActionCable
+documentation: https://github.com/martinale14/xActionCable
 
 environment:
   sdk: '>=3.4.3 <4.0.0'
@@ -20,7 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.12.0
-  x_action_cable_v2: ^1.0.0
+  x_action_cable_v2: ^1.0.1
 
 dev_dependencies:
   flutter_test:
@@ -30,7 +30,7 @@ dev_dependencies:
 flutter:
 
 topics:
-  - web sockets
-  - action cable
-  - x_action_cable
+  - sockets
+  - action
+  - cable
   - realtime

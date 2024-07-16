@@ -259,10 +259,10 @@ packages:
     dependency: transitive
     description:
       name: x_action_cable_v2
-      sha256: "873d216f8e9507a6756c409e5388b335da5fea7cb5aa843b23f214d9b77f8406"
+      sha256: "186f49b3e5f0d6ff6a3c4950a8c67d7bb48359b5f85a5a854e55ffd58ce2e538"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.1"
 sdks:
   dart: ">=3.4.3 <4.0.0"
   flutter: ">=3.18.0-18.0.pre.54"
