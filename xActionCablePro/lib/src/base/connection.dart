@@ -53,15 +53,18 @@ class Connection {
       headers: _headers,
       uri: _uri,
     );
-    _headers = reference.headers;
-    _uri = reference.uri;
+
     for (final interceptor in _interceptors) {
       reference = interceptor.beforeConnection(reference);
     }
+
+    _headers = reference.headers;
+    _uri = reference.uri;
+
     _cable = runZonedGuarded<ActionCable>(
       () => ActionCable.connect(
-        reference.uri.toString(),
-        headers: reference.headers,
+        _uri.toString(),
+        headers: _headers,
         onConnected: () {
           _log('Connection established to $_uri');
           _retryCount = 0;
