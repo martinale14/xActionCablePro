@@ -5,10 +5,13 @@ import 'dart:io';
 import 'package:x_action_cable_pro/x_action_cable_pro.dart';
 import 'package:meta/meta.dart';
 
-abstract class Connection {
+import 'connection_interceptor.dart';
+
+class Connection {
   final String url;
   final int retries;
   final Duration retryDelay;
+  final List<ConnectionInterceptor> interceptors;
 
   bool connected = false;
   int _retryCount = 0;
@@ -22,6 +25,7 @@ abstract class Connection {
     required this.url,
     this.retries = 3,
     this.retryDelay = const Duration(seconds: 3),
+    this.interceptors = const [],
   });
 
   Future<void> connect() async {
