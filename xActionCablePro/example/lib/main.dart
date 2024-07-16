@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:example/connections/test_connection.dart';
 import 'package:flutter/material.dart';
+import 'package:x_action_cable_pro/x_action_cable_pro.dart';
 
-final connection = TestConnection(url: 'ws://192.168.1.196:3000/cable');
+final connection = Connection(url: 'ws://localhost:3000/cable');
 
 Future<void> main() async {
   connection.connect().then((_) {
