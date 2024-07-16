@@ -5,11 +5,11 @@ import 'package:meta/meta_meta.dart';
 @Target({TargetKind.classType})
 final class CableChannel {
   final String? name;
-  final bool injectableSingleton;
+  final List<String> extraAnnotations;
 
   const CableChannel({
     this.name,
-    this.injectableSingleton = false,
+    this.extraAnnotations = const [],
   });
 }
 
