@@ -7,7 +7,9 @@ void main() {
   configureLocator();
 
   locator<TestConnection>().connect().then((_) {
-    locator<TestConnection>().addSubscription(TestChannel(bookingId: '123'));
+    if (locator<TestConnection>().connected) {
+      locator<TestConnection>().addSubscription(TestChannel(bookingId: '123'));
+    }
   });
 
   runApp(const MyApp());
