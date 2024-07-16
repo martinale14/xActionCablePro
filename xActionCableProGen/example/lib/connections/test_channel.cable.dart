@@ -8,6 +8,7 @@ part of 'test_channel.dart';
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
+@lazySingleton
 final class TestChannel extends _TestChannel {
   TestChannel({super.bookingId});
 

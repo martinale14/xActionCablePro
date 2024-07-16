@@ -12,6 +12,9 @@ dependencies:
   cupertino_icons: ^1.0.6
   flutter:
     sdk: flutter
+  get_it: ^7.7.0
+  injectable: ^2.4.2
+  json_annotation: ^4.9.0
   x_action_cable_pro:
     git:
       url: https://github.com/picap-inc/xActionCable
@@ -19,15 +22,17 @@ dependencies:
       path: xActionCablePro
 
 dev_dependencies:
+  build_runner: ^2.4.11
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  injectable_generator: ^2.6.1
+  json_serializable: ^6.8.0
   x_action_cable_pro_gen:
     git:
       url: https://github.com/picap-inc/xActionCable
       ref: main
       path: xActionCableProGen
-  build_runner: ^2.4.11
 
 dependency_overrides:
   x_action_cable_pro_gen:

@@ -23,8 +23,9 @@ final class ChannelParam {
 
 @immutable
 @Target({TargetKind.method})
-final class ChannelAction {
+final class ChannelAction<T> {
   final String? code;
+  final Function? converter;
 
-  const ChannelAction({this.code});
+  const ChannelAction({this.code, this.converter});
 }

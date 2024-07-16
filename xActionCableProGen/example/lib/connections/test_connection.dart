@@ -1,6 +1,18 @@
+import 'package:injectable/injectable.dart';
 import 'package:x_action_cable_pro/x_action_cable_pro.dart';
 
 class TestConnection extends Connection {
-  @override
-  String get url => 'ws://10.97.124.208:3000/cable';
+  TestConnection({
+    required super.url,
+    super.retries,
+    super.retryDelay,
+    super.interceptors,
+  });
+}
+
+@module
+abstract class ActionCableModule {
+  @lazySingleton
+  TestConnection testConnection() =>
+      TestConnection(url: 'ws://192.168.1.196:3000/cable');
 }

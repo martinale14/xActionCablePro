@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:dart_style/dart_style.dart';
@@ -56,8 +57,24 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
     channelName =
         channelName.endsWith('Channel') ? channelName : '${channelName}Channel';
 
+    final ConstantReader? annotationsReader =
+        annotation.peek(Consts.extraAnnotations.name);
+
+    final List<String> annotations = [];
+
+    if (annotationsReader != null) {
+      for (final obj in annotationsReader.listValue) {
+        final String? value = obj.toStringValue();
+        if (value == null) continue;
+        annotations.add(value);
+      }
+    }
+
     final classBuilder = Class((builder) {
       builder
+        ..annotations.addAll(annotations.map(
+          (annotation) => CodeExpression(Code(annotation)),
+        ))
         ..modifier = ClassModifier.final$
         ..name = className
         ..extend = refer(element.displayName)
@@ -119,9 +136,37 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
           String code =
               reader.peek(Consts.code.name)?.stringValue ?? method.displayName;
 
-          actions.write(
-            'CableAction(code: \'$code\', action: ${method.displayName}),',
-          );
+          if (method.parameters.length < 2) {
+            throw InvalidGenerationSourceError(
+              'Generator cannot target `${method.displayName}`. Requires at least 2 parameters',
+            );
+          }
+
+          if (!method.parameters[1].type.isDartCoreString ||
+              method.parameters[1].type.nullabilitySuffix !=
+                  NullabilitySuffix.question) {
+            throw InvalidGenerationSourceError(
+              'Generator cannot target `${method.displayName}`. Second parameter must be a nullable String',
+            );
+          }
+
+          if (method.parameters[0].type is DynamicType) {
+            actions.write(
+              'CableAction(code: \'$code\', action: ${method.displayName}),',
+            );
+          } else {
+            String generic = method.parameters[0].type
+                .getDisplayString(withNullability: true);
+            bool hasConverter = !method.parameters[0].type.isDartCoreType;
+
+            if (hasConverter) {
+              ConstantReader? converterReader = reader.peek(field);
+            } else {
+              actions.write(
+                'CableAction<$generic>(code: \'$code\', action: ${method.displayName}),',
+              );
+            }
+          }
         }
 
         actions.write(']');
