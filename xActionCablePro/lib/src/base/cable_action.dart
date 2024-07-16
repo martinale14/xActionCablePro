@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:flutter/foundation.dart';
 import 'package:x_action_cable/models/models.dart';
 
 class CableAction<T> {
@@ -19,12 +22,23 @@ class CableAction<T> {
 
   void _realAction(ActionResponse response) {
     if (response.data != null && converter != null) {
-      final T? data = converter!(response.data!);
-      action?.call(data, response.error);
+      try {
+        final T? data = converter!.call(response.data!);
+        action?.call(data, response.error);
+
+        return;
+      } catch (e, s) {
+        debugPrint(e.toString());
+        debugPrint(s.toString());
+      }
+    }
+
+    if (response.data != null) {
+      action?.call(response.data as T, response.error);
 
       return;
     }
 
-    action?.call(response.data as dynamic, response.error);
+    action?.call(null, response.error);
   }
 }

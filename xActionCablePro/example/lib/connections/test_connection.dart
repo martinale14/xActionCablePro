@@ -3,7 +3,7 @@ import 'package:x_action_cable_pro/x_action_cable_pro.dart';
 class TestConnection extends Connection {
   TestConnection({
     required super.url,
-    super.retrayDelay,
+    super.retryDelay,
     super.retries,
   });
 }
@@ -18,14 +18,27 @@ class TestChannel extends Channel {
 
   @override
   List<CableAction> get actions => [
-        CableAction(code: 'message', action: onMessage),
+        CableAction<Message>(
+          code: 'message',
+          action: onMessage,
+          converter: Message.fromJson,
+        ),
       ];
 
   TestChannel({
     required this.bookingId,
   });
 
-  void onMessage(dynamic data, String? error) {
-    print(data);
+  void onMessage(Message? data, String? error) {
+    print(data?.test);
   }
+}
+
+class Message {
+  String test;
+
+  Message(this.test);
+
+  factory Message.fromJson(Map<String, dynamic> json) =>
+      Message(json['test'] as String);
 }

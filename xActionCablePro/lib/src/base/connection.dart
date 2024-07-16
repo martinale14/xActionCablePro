@@ -8,7 +8,7 @@ import 'package:meta/meta.dart';
 abstract class Connection {
   final String url;
   final int retries;
-  final Duration retrayDelay;
+  final Duration retryDelay;
 
   bool connected = false;
   int _retryCount = 0;
@@ -21,7 +21,7 @@ abstract class Connection {
   Connection({
     required this.url,
     this.retries = 3,
-    this.retrayDelay = const Duration(seconds: 3),
+    this.retryDelay = const Duration(seconds: 3),
   });
 
   Future<void> connect() async {
@@ -31,7 +31,7 @@ abstract class Connection {
         await _connect();
       } catch (_) {
         _retryCount++;
-        await Future.delayed(retrayDelay);
+        await Future.delayed(retryDelay);
       }
     } while (_retryCount <= retries && !connected);
   }
@@ -87,7 +87,7 @@ abstract class Connection {
   Future<void> _retry() async {
     _retryCount++;
     _log('Retry #$_retryCount');
-    await Future.delayed(retrayDelay);
+    await Future.delayed(retryDelay);
     try {
       await _connect();
     } catch (_) {
