@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:x_action_cable_pro/x_action_cable_pro.dart';
@@ -13,6 +14,9 @@ class TestConnection extends Connection {
 class TestChannel extends Channel {
   final String bookingId;
 
+  final _messageStreamController = StreamController<Message>();
+  Stream<Message> get messageStream => _messageStreamController.stream;
+
   @override
   Map<String, dynamic> get channelParams => {
         'id': bookingId,
@@ -22,7 +26,12 @@ class TestChannel extends Channel {
   List<CableAction> get actions => [
         CableAction<Message>(
           code: 'message',
-          action: onMessage,
+          action: (message, error) {
+            if (message != null) {
+              _messageStreamController.add(message);
+            }
+            onMessage(message, error);
+          },
           converter: Message.fromJson,
         ),
       ];

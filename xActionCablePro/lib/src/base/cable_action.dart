@@ -2,7 +2,7 @@ import 'package:x_action_cable/models/models.dart';
 
 class CableAction<T> {
   String code;
-  dynamic Function(T? data, String? error)? action;
+  void Function(T? data, String? error)? action;
   final T Function(Map<String, dynamic> json)? converter;
   late final ActionCallback actionCallback;
 

@@ -7,3 +7,4 @@ export 'package:x_action_cable_pro/src/base/cable_action.dart';
 export 'package:x_action_cable_pro/src/base/connection_interceptor.dart';
 export 'package:x_action_cable_pro/src/base/connection_reference.dart';
 export 'package:x_action_cable/models/models.dart';
+export 'dart:async';
