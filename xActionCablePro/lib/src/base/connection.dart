@@ -12,8 +12,8 @@ class Connection {
   final int retries;
   final Duration retryDelay;
   late Uri _uri;
+  late Map<String, String> _headers;
   late final List<ConnectionInterceptor> _interceptors;
-  late final Map<String, String> _headers;
 
   bool connected = false;
   int _retryCount = 0;
