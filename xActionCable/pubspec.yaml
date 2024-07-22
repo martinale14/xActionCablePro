@@ -6,7 +6,7 @@ homepage: https://github.com/martinale14/xActionCable
 documentation: https://github.com/martinale14/xActionCable
 
 environment:
-  sdk: '>=3.4.3 <4.0.0'
+  sdk: '>=2.18.5 <4.0.0'
 
 platforms:
   android:

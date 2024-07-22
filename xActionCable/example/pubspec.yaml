@@ -12,7 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  x_action_cable:
+  x_action_cable_v2:
     path: ../
 
 dev_dependencies:
