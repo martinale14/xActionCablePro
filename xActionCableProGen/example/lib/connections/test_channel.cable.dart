@@ -18,7 +18,7 @@ final class TestChannel extends _TestChannel {
   final onReceiveStreamController = StreamController<dynamic>();
 
   @override
-  Map<String, dynamic> get channelParams => {
+  Map<String, dynamic> get params => {
         'id': bookingId,
       };
 

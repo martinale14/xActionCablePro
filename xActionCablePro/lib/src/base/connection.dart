@@ -17,9 +17,6 @@ class Connection {
   ActionCable? _cable;
   final Map<String, Channel> _subscriptions = {};
 
-  ActionCable? get cable => _cable;
-  Map<String, dynamic> get subscriptions => Map.unmodifiable(_subscriptions);
-
   Connection({
     required String url,
     this.retries = 3,
@@ -52,7 +49,7 @@ class Connection {
     );
 
     for (final interceptor in _interceptors) {
-      reference = interceptor.beforeConnection(reference);
+      reference = await interceptor.beforeConnection(reference);
     }
 
     _headers = reference.headers;
@@ -139,17 +136,17 @@ class Connection {
   }
 
   void addSubscription(Channel channel) {
-    final newChannel = cable?.subscribe(
-      channel.channelName,
-      channelParams: channel.channelParams,
+    final newChannel = _cable?.subscribe(
+      channel.name,
+      channelParams: channel.params,
       onSubscribed: () {
-        assert(!_subscriptions.containsKey(channel.channelName));
-        _subscriptions[channel.channelName] = channel;
+        assert(!_subscriptions.containsKey(channel.name));
+        _subscriptions[channel.name] = channel;
         channel.onSubscribed();
       },
       onDisconnected: () {
-        assert(_subscriptions.containsKey(channel.channelName));
-        _subscriptions.remove(channel.channelName);
+        assert(_subscriptions.containsKey(channel.name));
+        _subscriptions.remove(channel.name);
         channel.onDisconnected();
       },
       callbacks:
@@ -158,11 +155,20 @@ class Connection {
     channel.channel = newChannel;
   }
 
-  void removeSubscription(String channelName) {
-    _subscriptions[channelName]?.channel?.unsubscribe();
-    _subscriptions[channelName]?.onDisconnected();
-    assert(_subscriptions.containsKey(channelName));
-    _subscriptions.remove(channelName);
+  void disconnect() {
+    _cable?.disconnect();
+  }
+
+  bool isSubscribedTo(Channel channel) =>
+      _subscriptions.containsKey(channel.name);
+
+  bool isNotSubscribedTo(Channel channel) => !isSubscribedTo(channel);
+
+  void removeSubscription(Channel channel) {
+    _subscriptions[channel.name]?.unsuscribe();
+    _subscriptions[channel.name]?.onDisconnected();
+    assert(_subscriptions.containsKey(channel.name));
+    _subscriptions.remove(channel.name);
   }
 }
 

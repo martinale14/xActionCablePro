@@ -7,11 +7,15 @@ import 'package:x_action_cable_v2/models/action_channel.dart';
 abstract class Channel {
   ActionChannel? channel;
 
-  Map<String, dynamic> get channelParams => {};
-  String get channelName => runtimeType.toString();
+  Map<String, dynamic> get params => {};
+  String get name => runtimeType.toString();
   List<CableAction> get actions => [];
 
   Channel();
+
+  void unsuscribe() {
+    channel?.unsubscribe();
+  }
 
   @mustCallSuper
   void onSubscribed() {

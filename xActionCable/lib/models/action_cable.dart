@@ -86,6 +86,10 @@ class ActionCable {
     );
   }
 
+  void disconnect() {
+    _disconnect();
+  }
+
   void _disconnect() {
     _timer.cancel();
     _socketChannel.sink.close();

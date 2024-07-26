@@ -15,7 +15,7 @@ dependencies:
   get_it: ^7.7.0
   injectable: ^2.4.2
   json_annotation: ^4.9.0
-  x_action_cable_pro: ^1.0.0
+  x_action_cable_pro: ^1.1.0
 
 dev_dependencies:
   build_runner: ^2.4.11

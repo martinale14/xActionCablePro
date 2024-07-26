@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:x_action_cable/x_action_cable.dart';
+import 'package:x_action_cable_v2/x_action_cable.dart';
 
 void main() => runApp(const MyApp());
 

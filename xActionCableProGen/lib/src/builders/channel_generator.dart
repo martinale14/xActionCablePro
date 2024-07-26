@@ -120,7 +120,7 @@ final class ChannelGenerator extends GeneratorForAnnotation<pro.CableChannel> {
               TypeReference((TypeReferenceBuilder typeReferenceBuilder) {
             typeReferenceBuilder.symbol = 'Map<String, dynamic>';
           })
-          ..name = 'channelParams'
+          ..name = 'params'
           ..type = MethodType.getter
           ..lambda = true
           ..body = Code(params.toString());

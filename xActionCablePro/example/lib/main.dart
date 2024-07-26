@@ -72,6 +72,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  final testChannel = TestChannel(
+    bookingId: '456',
+  );
 
   void _incrementCounter() {
     setState(() {
@@ -82,14 +85,11 @@ class _MyHomePageState extends State<MyHomePage> {
       // called again, and so nothing would appear to happen.
       _counter++;
     });
-    if (connection.subscriptions.containsKey('TestChannel')) {
-      connection.removeSubscription('TestChannel');
+
+    if (connection.isSubscribedTo(testChannel)) {
+      connection.removeSubscription(testChannel);
     } else {
-      connection.addSubscription(
-        TestChannel(
-          bookingId: '456',
-        ),
-      );
+      connection.addSubscription(testChannel);
     }
   }
 
