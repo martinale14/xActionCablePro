@@ -156,7 +156,14 @@ class Connection {
   }
 
   void disconnect() {
+    _subscriptions.keys.forEach((channel) {
+      _subscriptions[channel]?.unsuscribe();
+    });
+    _subscriptions.clear();
+    connected = false;
+    _retryCount = 0;
     _cable?.disconnect();
+    _cable = null;
   }
 
   bool isSubscribedTo(Channel channel) =>

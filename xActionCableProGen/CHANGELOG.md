@@ -1,4 +1,10 @@
-# 2024-07-26 1.0.3
+# 2024-07-26 1.1.2
+Update dependency x_action_cable_pro to ^1.1.2
+
+# 2024-07-26 1.1.1
+Update dependency x_action_cable_pro to ^1.1.1
+
+# 2024-07-26 1.1.0
 Update dependency x_action_cable_pro to ^1.1.0 and rename channelParams to params
 
 # 2024-07-23 1.0.3

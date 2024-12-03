@@ -1,5 +1,5 @@
 name: x_action_cable_v2
-version: 1.0.2
+version: 1.1.0
 description: >-
   Port for x_action_cable, solving problems to enhance app updates.
 homepage: https://github.com/martinale14/xActionCable
@@ -17,9 +17,9 @@ platforms:
   windows:
 
 dependencies:
-  web_socket_channel: ^2.2.0
-  logger: ^1.1.0
-  collection: ^1.16.0
+  web_socket_channel: ^3.0.1
+  logger: ^2.5.0
+  collection: ^1.18.0
 
 dev_dependencies:
   test:

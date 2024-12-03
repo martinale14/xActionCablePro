@@ -1,3 +1,9 @@
+# 2024-07-26 1.1.2
+Improve auto unsubscribe on disconnection
+
+# 2024-07-26 1.1.1
+Fix on disconnection
+
 # 2024-07-26 1.1.0
 Fix param names and better handling subscriptions
 
