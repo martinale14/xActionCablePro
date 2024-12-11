@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
@@ -157,7 +156,7 @@ class Connection {
 
   void disconnect() {
     _subscriptions.keys.forEach((channel) {
-      _subscriptions[channel]?.unsuscribe();
+      //_subscriptions[channel]?.unsuscribe();
     });
     _subscriptions.clear();
     connected = false;
