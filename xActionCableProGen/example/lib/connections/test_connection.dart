@@ -15,14 +15,10 @@ class TestConnection extends Connection {
 abstract class ActionCableModule {
   @lazySingleton
   TestConnection testConnection() => TestConnection(
-        url: 'ws://192.168.1.196:3000/cable',
-        headers: {
-          'x-test': 'Este es un header test',
-        },
-        interceptors: [
-          AuthorizeConnectionInterceptor(),
-        ],
-      );
+    url: 'ws://localhost:3000/cable',
+    headers: {'x-test': 'Este es un header test'},
+    interceptors: [AuthorizeConnectionInterceptor()],
+  );
 }
 
 class AuthorizeConnectionInterceptor extends ConnectionInterceptor {
@@ -31,8 +27,9 @@ class AuthorizeConnectionInterceptor extends ConnectionInterceptor {
     final newHeaders = Map<String, String>.from(reference.headers);
     newHeaders['x-new'] = 'Este es un nuevo header';
 
-    final queryParameters =
-        Map<String, String>.from(reference.uri.queryParameters);
+    final queryParameters = Map<String, String>.from(
+      reference.uri.queryParameters,
+    );
     queryParameters.putIfAbsent('t', () => 'my-user-token');
     final newUri = reference.uri.replace(queryParameters: queryParameters);
 

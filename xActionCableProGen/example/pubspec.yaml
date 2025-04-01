@@ -27,5 +27,9 @@ dev_dependencies:
   x_action_cable_pro_gen:
     path: ../
 
+dependency_overrides:
+  x_action_cable_pro:
+    path: ../../xActionCablePro
+
 flutter:
   uses-material-design: true
