@@ -37,7 +37,7 @@ class Connection {
         _retryCount++;
         await Future.delayed(retryDelay);
       }
-    } while (_retryCount <= retries && !connected);
+    } while (retries < 0 || (_retryCount <= retries && !connected));
   }
 
   Future<void> _connect() async {

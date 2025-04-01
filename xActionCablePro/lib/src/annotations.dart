@@ -23,7 +23,7 @@ final class ChannelParam {
 
 @immutable
 @Target({TargetKind.method})
-final class ChannelAction<T> {
+final class ChannelAction {
   final String? code;
   final Function? converter;
 
