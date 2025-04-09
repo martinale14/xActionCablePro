@@ -12,6 +12,8 @@ class Connection {
   late final List<ConnectionInterceptor> _interceptors;
 
   bool connected = false;
+  bool reconecting = false;
+  bool get isAlive => connected || reconecting;
   int _retryCount = 0;
   ActionCable? _cable;
   final Map<String, Channel> _subscriptions = {};
@@ -62,6 +64,7 @@ class Connection {
           _log('Connection established to $_uri');
           _retryCount = 0;
           connected = true;
+          reconecting = false;
           onConnected();
           completer.complete();
         },
@@ -82,17 +85,20 @@ class Connection {
   }
 
   void _onConnectionFailure() {
+    reconecting = true;
     connected = false;
     if (retries == 0) {
+      reconecting = false;
       throw Exception('Connection Failure');
     }
 
-    if (_retryCount < retries) {
-      _retry();
+    if (_retryCount < retries || retries < 0) {
+      unawaited(_retry());
 
       return;
     }
 
+    reconecting = false;
     throw Exception('Max retries reached connection Failure');
   }
 
@@ -155,10 +161,12 @@ class Connection {
   }
 
   void disconnect() {
+    _log('Disconnected from $_uri');
     _subscriptions.keys.forEach((channel) {
       //_subscriptions[channel]?.unsuscribe();
     });
     _subscriptions.clear();
+    reconecting = false;
     connected = false;
     _retryCount = 0;
     _cable?.disconnect();

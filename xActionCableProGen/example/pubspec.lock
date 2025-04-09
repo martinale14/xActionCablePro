@@ -606,14 +606,14 @@ packages:
       path: "../../xActionCablePro"
       relative: true
     source: path
-    version: "1.1.4"
+    version: "1.1.5"
   x_action_cable_pro_gen:
     dependency: "direct dev"
     description:
       path: ".."
       relative: true
     source: path
-    version: "1.1.4"
+    version: "1.1.5"
   x_action_cable_v2:
     dependency: transitive
     description:
